@@ -7,127 +7,170 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#eef2ee;--panel:#fff;--ink:#1d2a27;--sub:#5d6d68;--line:#d5ded9;--accent:#3555d6;--accent-ink:#fff;--warn:#b3261e}
+:root{--bg:#eef2ee;--panel:#fff;--ink:#1d2a27;--sub:#5d6d68;--line:#d5ded9;--accent:#3555d6;--warn:#b3261e;--side:#1d2a27}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{font-family:"Zen Maru Gothic",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
-#app{max-width:640px;height:100%;margin:0 auto;display:flex;flex-direction:column}
-.view{display:none;flex:1;min-height:0;flex-direction:column;padding:20px}
-.view.on{display:flex}
-h1{font-size:1.6rem;margin:0 0 4px}
-h2{font-size:1.05rem;margin:0 0 10px}
-p.sub{color:var(--sub);margin:0 0 20px;font-size:.92rem}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
-label{display:block;font-size:.88rem;color:var(--sub);margin:10px 0 4px}
-input[type=text],input[type=password]{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
-button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:10px 16px}
-button.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 14px}
+button.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
 button:focus-visible,input:focus-visible{outline:3px solid #9fb2ff;outline-offset:1px}
+input[type=text],input[type=password]{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+label{display:block;font-size:.88rem;color:var(--sub);margin:10px 0 4px}
+h2{font-size:1.02rem;margin:0 0 10px}
+#app{display:flex;height:100%}
+#side{width:250px;flex:none;background:var(--side);color:#e8efec;display:flex;flex-direction:column;padding:18px 12px;gap:10px}
+.brand{font-weight:700;font-size:1.2rem;padding:0 8px}
+.me{padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.08)}
+.me b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.me span{color:#9fb3ab;font-size:.8rem}
+nav{display:grid;gap:4px}
+nav button{text-align:left;background:transparent;border:0;color:inherit;padding:10px 12px}
+nav button.on{background:rgba(255,255,255,.14)}
+#dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ff6b5e;margin-left:8px}
+main{flex:1;min-width:0;display:flex;flex-direction:column;max-width:760px;margin:0 auto;width:100%}
+.top{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line)}
+.top strong{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top button{padding:4px 12px}
+.tag{font-size:.78rem;border:1px solid var(--line);border-radius:99px;padding:0 10px;color:var(--sub);background:#fff}
+.view{display:none;flex:1;min-height:0;overflow-y:auto;padding:16px 20px}
+.view.on{display:block}
+#v-chat.on{display:flex;flex-direction:column;overflow:hidden}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.err{color:var(--warn);font-size:.88rem;min-height:1.3em;margin:8px 0 0}
+.empty{color:var(--sub);font-size:.92rem;margin:4px 0}
+.chips{display:flex;gap:8px;margin-bottom:12px}
+.chip.on{background:#e7ecff;border-color:var(--accent)}
 .seg{display:flex;gap:8px;margin-top:6px}
 .seg label{flex:1;margin:0;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;background:#fff}
-.seg input{margin-right:6px}
 .seg label:has(input:checked){border-color:var(--accent);background:#e7ecff}
-.row{display:flex;gap:8px}
-.row input{flex:1}
-.err{color:var(--warn);font-size:.88rem;min-height:1.3em;margin:8px 0 0}
-.rooms{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-.rooms button{width:100%;text-align:left;display:flex;justify-content:space-between;gap:8px}
-.rooms small{color:var(--sub)}
-.empty{color:var(--sub);font-size:.92rem}
-.who{color:var(--sub);font-size:.88rem;margin-bottom:12px}
-.who button{padding:2px 10px;font-size:.82rem;margin-left:6px}
-.warn{background:#fff3cf;border:1px solid #e8cf80;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:.88rem}
-.bar{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--line)}
-.bar strong{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tag{font-size:.78rem;border:1px solid var(--line);border-radius:99px;padding:0 10px;color:var(--sub);background:#fff}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.list li{display:flex;gap:6px}
+.room{flex:1;min-width:0;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left}
+.room b{overflow:hidden;text-overflow:ellipsis}
+.room small{color:var(--sub);white-space:nowrap}
+.room em{font-style:normal;font-size:.72rem;background:var(--accent);color:#fff;border-radius:99px;padding:0 8px;margin-left:8px}
 #log{flex:1;min-height:0;overflow-y:auto;padding:14px 0;display:flex;flex-direction:column;gap:10px}
 .msg{max-width:82%;align-self:flex-start}
 .msg .meta{font-size:.76rem;color:var(--sub);margin:0 6px 2px}
 .msg .body{background:#fff;border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:8px 12px;white-space:pre-wrap;overflow-wrap:anywhere}
 .msg.me{align-self:flex-end;text-align:right}
-.msg.me .body{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);border-radius:14px 14px 4px 14px;text-align:left}
-#send{padding-top:10px;border-top:1px solid var(--line)}
+.msg.me .body{background:var(--accent);border-color:var(--accent);color:#fff;border-radius:14px 14px 4px 14px;text-align:left}
+#send{display:flex;gap:8px;padding-top:10px;border-top:1px solid var(--line)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 16px;border-radius:99px;font-size:.88rem;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
+#toast.on{opacity:1}
+#scrim{display:none}
+.nonick #side,.nonick #burger{display:none}
+@media(min-width:801px){#burger{display:none}}
+@media(max-width:800px){
+  #side{position:fixed;inset:0 auto 0 0;z-index:20;transform:translateX(-100%);transition:transform .2s;width:270px}
+  .open #side{transform:none}
+  .open #scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:10}
+}
 </style>
 </head>
 <body>
-<div id="app">
+<div id="app" class="nonick">
 
-<!-- ニックネーム -->
-<section id="v-nick" class="view on">
-  <div style="margin:auto 0">
-    <h1>ルームチャット</h1>
-    <p class="sub">はじめに、チャットで使うニックネームを入力してください。</p>
+<aside id="side">
+  <div class="brand">ルームチャット</div>
+  <div class="me"><b id="me-nick"></b><span id="me-id"></span></div>
+  <nav>
+    <button data-go="home">🏠 公開ルーム</button>
+    <button data-go="mine">✏️ マイルーム</button>
+    <button data-go="joined">💬 参加ルーム<i id="dot" hidden></i></button>
+    <button data-go="nick">🙂 ニックネーム変更</button>
+  </nav>
+</aside>
+<div id="scrim"></div>
+
+<main>
+  <header class="top">
+    <button id="burger" aria-label="メニュー">☰</button>
+    <strong id="title"></strong>
+    <span class="tag" id="tag" hidden></span>
+    <button id="fav" hidden aria-label="お気に入り">☆</button>
+    <button id="share-room" hidden>共有</button>
+  </header>
+
+  <!-- 公開ルーム一覧 -->
+  <section class="view" id="v-home">
+    <div class="chips">
+      <button class="chip on" id="o-pop">人気順</button>
+      <button class="chip" id="o-rnd">ランダム</button>
+    </div>
+    <ul class="list" id="home-list"></ul>
+    <p class="empty" id="home-empty">公開ルームはまだありません。</p>
+  </section>
+
+  <!-- マイルーム -->
+  <section class="view" id="v-mine">
     <div class="card">
+      <h2>ルームを追加</h2>
+      <label for="c-id">ルームID</label>
+      <input id="c-id" type="text" maxlength="30" autocomplete="off" placeholder="例: friends-room">
+      <div class="seg">
+        <label><input type="radio" name="vis" value="public" checked> 公開（誰でも入れる）</label>
+        <label><input type="radio" name="vis" value="private"> 非公開（パスワード）</label>
+      </div>
+      <div id="c-pass-wrap" hidden>
+        <label for="c-pass">パスワード</label>
+        <input id="c-pass" type="password" autocomplete="new-password">
+      </div>
+      <p class="err" id="c-err"></p>
+      <button class="pri" id="c-ok" style="width:100%">作って入る</button>
+    </div>
+    <h2>自分が作ったルーム</h2>
+    <ul class="list" id="mine-list"></ul>
+    <p class="empty" id="mine-empty">まだルームを作っていません。</p>
+  </section>
+
+  <!-- 参加ルーム -->
+  <section class="view" id="v-joined">
+    <div class="card">
+      <h2>ルームに参加</h2>
+      <label for="j-id">ルームID</label>
+      <input id="j-id" type="text" maxlength="30" autocomplete="off">
+      <div id="j-pass-wrap" hidden>
+        <label for="j-pass">パスワード</label>
+        <input id="j-pass" type="password" autocomplete="off">
+      </div>
+      <p class="err" id="j-err"></p>
+      <button class="pri" id="j-ok" style="width:100%">参加する</button>
+    </div>
+    <h2>入ったことのあるルーム</h2>
+    <ul class="list" id="joined-list"></ul>
+    <p class="empty" id="joined-empty">まだ参加したルームはありません。</p>
+  </section>
+
+  <!-- ニックネーム -->
+  <section class="view" id="v-nick">
+    <div class="card" style="margin-top:8vh">
+      <h2>ニックネーム</h2>
+      <p class="empty">チャットで表示される名前です。同じ名前の人とは、名前の後ろの #ID で見分けられます。</p>
       <label for="nick">ニックネーム</label>
       <input id="nick" type="text" maxlength="20" autocomplete="off">
       <p class="err" id="nick-err"></p>
-      <button class="pri" id="nick-ok" style="width:100%;margin-top:6px">はじめる</button>
+      <button class="pri" id="nick-ok" style="width:100%">決定</button>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ロビー -->
-<section id="v-lobby" class="view" style="overflow-y:auto">
-  <div id="cfg-warn" class="warn" hidden>script内の firebaseConfig を自分のFirebaseプロジェクトの値に書き換えてください。</div>
-  <div class="who"><span id="who"></span><button id="change-nick">変更</button></div>
-
-  <div class="card">
-    <h2>公開ルーム</h2>
-    <ul class="rooms" id="public-list"></ul>
-    <p class="empty" id="public-empty">公開ルームはまだありません。</p>
-  </div>
-
-  <div class="card">
-    <h2>ルームを作る</h2>
-    <label for="c-id">ルームID</label>
-    <input id="c-id" type="text" maxlength="30" autocomplete="off" placeholder="例: friends-room">
-    <div class="seg">
-      <label><input type="radio" name="vis" value="public" checked>公開（誰でも入れる）</label>
-      <label><input type="radio" name="vis" value="private">非公開（パスワード）</label>
-    </div>
-    <div id="c-pass-wrap" hidden>
-      <label for="c-pass">パスワード</label>
-      <input id="c-pass" type="password" autocomplete="new-password">
-    </div>
-    <p class="err" id="c-err"></p>
-    <button class="pri" id="c-ok" style="width:100%">作って入る</button>
-  </div>
-
-  <div class="card">
-    <h2>ルームIDで入る</h2>
-    <label for="j-id">ルームID</label>
-    <input id="j-id" type="text" maxlength="30" autocomplete="off">
-    <div id="j-pass-wrap" hidden>
-      <label for="j-pass">パスワード</label>
-      <input id="j-pass" type="password" autocomplete="off">
-    </div>
-    <p class="err" id="j-err"></p>
-    <button id="j-ok" style="width:100%">入る</button>
-  </div>
-</section>
-
-<!-- チャット -->
-<section id="v-chat" class="view">
-  <div class="bar">
-    <button id="leave">戻る</button>
-    <strong id="room-title"></strong>
-    <span class="tag" id="room-tag"></span>
-  </div>
-  <div id="log" aria-live="polite"></div>
-  <form id="send" class="row">
-    <input id="text" type="text" maxlength="500" autocomplete="off" placeholder="メッセージを入力">
-    <button class="pri" type="submit">送信</button>
-  </form>
-</section>
-
+  <!-- チャット -->
+  <section class="view" id="v-chat">
+    <div id="log" aria-live="polite"></div>
+    <form id="send">
+      <input id="text" type="text" maxlength="500" autocomplete="off" placeholder="メッセージを入力">
+      <button class="pri" type="submit">送信</button>
+    </form>
+  </section>
+</main>
+<div id="toast"></div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, get, set, push, onValue, onChildAdded, query, limitToLast, serverTimestamp }
+import { getDatabase, ref, get, set, push, update, onValue, onChildAdded, query, limitToLast, serverTimestamp, increment }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// ▼ Firebaseコンソールの「ウェブアプリの設定」の値に書き換える
 const firebaseConfig = {
   apiKey: "AIzaSyB9kdG7mtI7ejui4jSDGdtY3qxmQpH4hNA",
   authDomain: "chat-aeb41.firebaseapp.com",
@@ -137,9 +180,7 @@ const firebaseConfig = {
 };
 
 const $ = id => document.getElementById(id);
-const configured = !firebaseConfig.apiKey.startsWith("YOUR_");
-const db = configured ? getDatabase(initializeApp(firebaseConfig)) : null;
-
+const db = getDatabase(initializeApp(firebaseConfig));
 const store = {
   get: k => { try { return localStorage.getItem(k); } catch { return null; } },
   set: (k, v) => { try { localStorage.setItem(k, v); } catch {} }
@@ -147,114 +188,204 @@ const store = {
 let uid = store.get("chat-uid");
 if (!uid) { uid = crypto.randomUUID(); store.set("chat-uid", uid); }
 let nick = store.get("chat-nick") || "";
-let stopMsgs = null;
+let S = {}; try { S = JSON.parse(store.get("chat-state") || "{}"); } catch {}
+S.joined = S.joined || {}; S.mine = S.mine || [];
+const save = () => store.set("chat-state", JSON.stringify(S));
+const shortId = u => (u || "").replace(/-/g, "").slice(0, 6).toUpperCase();
 
-function show(id) {
-  document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === id));
-}
+let stats = {}, pub = {}, cur = "", room = null, stopMsgs = null, order = "pop", rnd = {};
+
+const validId = s => /^[^.$#\[\]\/\s]{1,30}$/.test(s);
 async function sha(s) {
   const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
   return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
 }
-const validId = s => /^[^.$#\[\]\/\s]{1,30}$/.test(s);
+let tt;
+function toast(t) { const e = $("toast"); e.textContent = t; e.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => e.classList.remove("on"), 2600); }
+function fmt(ts) {
+  if (!ts) return "—";
+  const d = new Date(ts), n = new Date();
+  return d.toDateString() === n.toDateString()
+    ? d.toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })
+    : (d.getMonth() + 1) + "/" + (d.getDate());
+}
+const unread = id => ((stats[id] && stats[id].lastAt) || 0) > ((S.joined[id] && S.joined[id].lastRead) || 0);
+const statSub = id => "💬 " + ((stats[id] && stats[id].count) || 0) + "  ・  " + fmt(stats[id] && stats[id].lastAt);
+const lastAt = id => (stats[id] && stats[id].lastAt) || 0;
 
-/* ニックネーム */
-$("nick").value = nick;
+/* ---------- 画面切り替え ---------- */
+const TITLES = { home: "公開ルーム", mine: "マイルーム", joined: "参加ルーム", nick: "ニックネーム", chat: "" };
+function go(name) {
+  if (stopMsgs) { stopMsgs(); stopMsgs = null; room = null; }
+  cur = name;
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === "v-" + name));
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.go === name));
+  $("title").textContent = TITLES[name];
+  ["tag", "fav", "share-room"].forEach(i => $(i).hidden = name !== "chat");
+  $("app").classList.remove("open");
+  if (name === "nick") $("nick").value = nick;
+  render();
+}
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => go(b.dataset.go));
+$("burger").onclick = () => $("app").classList.toggle("open");
+$("scrim").onclick = () => $("app").classList.remove("open");
+
+/* ---------- 一覧の描画 ---------- */
+function row(id, sub, opts = {}) {
+  const li = document.createElement("li");
+  const b = document.createElement("button"); b.className = "room";
+  const t = document.createElement("span");
+  const n = document.createElement("b"); n.textContent = id; t.append(n);
+  if (opts.unread) { const u = document.createElement("em"); u.textContent = "更新あり"; t.append(u); }
+  const s = document.createElement("small"); s.textContent = sub;
+  b.append(t, s); b.onclick = () => enterRoom(id);
+  li.append(b);
+  (opts.btns || []).forEach(([label, fn]) => {
+    const x = document.createElement("button"); x.textContent = label; x.onclick = fn; li.append(x);
+  });
+  return li;
+}
+function renderHome() {
+  const ids = Object.keys(pub);
+  ids.forEach(i => { if (!(i in rnd)) rnd[i] = Math.random(); });
+  ids.sort(order === "pop"
+    ? (a, b) => (((stats[b] && stats[b].count) || 0) - ((stats[a] && stats[a].count) || 0)) || (lastAt(b) - lastAt(a))
+    : (a, b) => rnd[a] - rnd[b]);
+  const ul = $("home-list"); ul.textContent = "";
+  ids.forEach(id => ul.append(row(id, statSub(id))));
+  $("home-empty").hidden = ids.length > 0;
+}
+function renderMine() {
+  const ul = $("mine-list"); ul.textContent = "";
+  S.mine.slice().reverse().forEach(id => ul.append(row(id, statSub(id), { btns: [["共有", () => share(id)]] })));
+  $("mine-empty").hidden = S.mine.length > 0;
+}
+function renderJoined() {
+  const ids = Object.keys(S.joined);
+  // お気に入り＋更新あり → お気に入り → 更新あり → その他。同じ区分の中は更新が新しい順
+  const rank = id => (S.joined[id].fav ? 0 : 2) + (unread(id) ? 0 : 1);
+  ids.sort((a, b) => rank(a) - rank(b) || lastAt(b) - lastAt(a));
+  const ul = $("joined-list"); ul.textContent = "";
+  ids.forEach(id => ul.append(row(id, fmt(lastAt(id)), {
+    unread: unread(id),
+    btns: [[S.joined[id].fav ? "★" : "☆", () => { S.joined[id].fav = !S.joined[id].fav; save(); render(); }]]
+  })));
+  $("joined-empty").hidden = ids.length > 0;
+}
+function render() {
+  $("dot").hidden = !Object.keys(S.joined).some(unread);
+  if (cur === "home") renderHome();
+  else if (cur === "mine") renderMine();
+  else if (cur === "joined") renderJoined();
+}
+$("o-pop").onclick = () => { order = "pop"; $("o-pop").classList.add("on"); $("o-rnd").classList.remove("on"); render(); };
+$("o-rnd").onclick = () => { order = "rnd"; rnd = {}; $("o-rnd").classList.add("on"); $("o-pop").classList.remove("on"); render(); };
+
+onValue(ref(db, "publicRooms"), s => { pub = s.val() || {}; render(); });
+onValue(ref(db, "roomsStat"), s => { stats = s.val() || {}; render(); });
+
+/* ---------- ニックネーム ---------- */
+function updateMe() { $("me-nick").textContent = nick; $("me-id").textContent = "ユーザーID #" + shortId(uid); }
 $("nick-ok").onclick = () => {
   const v = $("nick").value.trim();
   if (!v) { $("nick-err").textContent = "ニックネームを入力してください。"; return; }
   nick = v; store.set("chat-nick", v);
   $("nick-err").textContent = "";
-  toLobby();
+  $("app").classList.remove("nonick");
+  updateMe(); go("home"); checkHash();
 };
 $("nick").onkeydown = e => { if (e.key === "Enter") $("nick-ok").click(); };
-$("change-nick").onclick = () => show("v-nick");
 
-function toLobby() {
-  $("who").textContent = "ニックネーム: " + nick;
-  show("v-lobby");
-}
-
-/* 公開ルーム一覧 */
-if (db) {
-  onValue(ref(db, "publicRooms"), snap => {
-    const list = $("public-list");
-    list.textContent = "";
-    const rooms = snap.val() || {};
-    const ids = Object.keys(rooms).sort((a, b) => (rooms[b].createdAt || 0) - (rooms[a].createdAt || 0));
-    $("public-empty").hidden = ids.length > 0;
-    ids.forEach(id => {
-      const li = document.createElement("li");
-      const b = document.createElement("button");
-      const n = document.createElement("span"); n.textContent = id;
-      const s = document.createElement("small"); s.textContent = "作成: " + (rooms[id].creator || "?");
-      b.append(n, s);
-      b.onclick = () => enterRoom(id, true);
-      li.append(b); list.append(li);
-    });
-  });
-} else {
-  $("cfg-warn").hidden = false;
-}
-
-/* ルーム作成 */
-document.querySelectorAll("input[name=vis]").forEach(r => {
-  r.onchange = () => { $("c-pass-wrap").hidden = document.querySelector("input[name=vis]:checked").value !== "private"; };
+/* ---------- ルーム作成 ---------- */
+document.querySelectorAll("input[name=vis]").forEach(r => r.onchange = () => {
+  $("c-pass-wrap").hidden = document.querySelector("input[name=vis]:checked").value !== "private";
 });
 $("c-ok").onclick = async () => {
   const err = $("c-err"); err.textContent = "";
-  if (!db) { err.textContent = "Firebaseの設定が未入力です。"; return; }
   const id = $("c-id").value.trim();
-  const isPublic = document.querySelector("input[name=vis]:checked").value === "public";
+  const isPub = document.querySelector("input[name=vis]:checked").value === "public";
   const pass = $("c-pass").value;
   if (!validId(id)) { err.textContent = "ルームIDは30文字以内で、空白と . $ # [ ] / は使えません。"; return; }
-  if (!isPublic && !pass) { err.textContent = "非公開ルームにはパスワードが必要です。"; return; }
+  if (!isPub && !pass) { err.textContent = "非公開ルームにはパスワードが必要です。"; return; }
   try {
-    if ((await get(ref(db, "roomsMeta/" + id))).exists()) { err.textContent = "そのルームIDは使われています。別のIDにしてください。"; return; }
-    await set(ref(db, "roomsMeta/" + id), { public: isPublic, passHash: isPublic ? null : await sha(id + ":" + pass), createdAt: Date.now() });
-    if (isPublic) await set(ref(db, "publicRooms/" + id), { creator: nick, createdAt: Date.now() });
+    if ((await get(ref(db, "roomsMeta/" + id))).exists()) { err.textContent = "そのルームIDは使われています。"; return; }
+    const ph = isPub ? null : await sha(id + ":" + pass), now = Date.now();
+    await set(ref(db, "roomsMeta/" + id), { public: isPub, passHash: ph, creator: uid, createdAt: now });
+    await set(ref(db, "roomsStat/" + id), { count: 0, lastAt: now });
+    if (isPub) await set(ref(db, "publicRooms/" + id), { creator: nick, createdAt: now });
+    S.mine.push(id); S.joined[id] = { pub: isPub, ph, lastRead: now, at: now }; save();
     $("c-id").value = ""; $("c-pass").value = "";
-    openChat(id, isPublic);
+    openChat(id, isPub);
   } catch (e) { err.textContent = "作成できませんでした: " + e.message; }
 };
 
-/* ルームに入る */
-$("j-ok").onclick = () => enterRoom($("j-id").value.trim(), false);
-async function enterRoom(id, fromList) {
-  const err = $("j-err"); err.textContent = "";
-  if (!db) { err.textContent = "Firebaseの設定が未入力です。"; return; }
-  if (!validId(id)) { err.textContent = "ルームIDを入力してください。"; return; }
+/* ---------- 参加 ---------- */
+$("j-ok").onclick = () => {
+  const id = $("j-id").value.trim();
+  if (!validId(id)) { $("j-err").textContent = "ルームIDを入力してください。"; return; }
+  enterRoom(id, $("j-pass").value);
+};
+async function enterRoom(id, pass) {
   try {
     const snap = await get(ref(db, "roomsMeta/" + id));
-    if (!snap.exists()) { err.textContent = "そのルームは見つかりません。"; return; }
+    if (!snap.exists()) { toast("そのルームは見つかりません"); if (cur === "joined") $("j-err").textContent = "そのルームは見つかりません。"; return; }
     const meta = snap.val();
+    let ph = (S.joined[id] && S.joined[id].ph) || null;
     if (!meta.public) {
-      $("j-pass-wrap").hidden = false;
-      const pass = $("j-pass").value;
-      if (!pass) { err.textContent = "このルームは非公開です。パスワードを入力してください。"; $("j-id").value = id; return; }
-      if (await sha(id + ":" + pass) !== meta.passHash) { err.textContent = "パスワードが違います。"; return; }
+      if (pass) ph = await sha(id + ":" + pass);
+      if (!ph || ph !== meta.passHash) {
+        go("joined"); $("j-id").value = id; $("j-pass-wrap").hidden = false;
+        $("j-err").textContent = pass ? "パスワードが違います。" : "非公開ルームです。パスワードを入力してください。";
+        return;
+      }
     }
-    $("j-id").value = ""; $("j-pass").value = ""; $("j-pass-wrap").hidden = true;
+    const j = S.joined[id] || { at: Date.now(), lastRead: 0 };
+    j.pub = !!meta.public; j.ph = meta.public ? null : ph; S.joined[id] = j; save();
+    $("j-id").value = ""; $("j-pass").value = ""; $("j-pass-wrap").hidden = true; $("j-err").textContent = "";
     openChat(id, !!meta.public);
-  } catch (e) { err.textContent = "入室できませんでした: " + e.message; }
+  } catch (e) { toast("入室できませんでした: " + e.message); }
+}
+function checkHash() {
+  const m = location.hash.match(/^#room=(.+)$/);
+  if (!m || !nick) return;
+  history.replaceState(null, "", location.pathname + location.search);
+  enterRoom(decodeURIComponent(m[1]));
 }
 
-/* チャット */
-function openChat(id, isPublic) {
-  $("room-title").textContent = id;
-  $("room-tag").textContent = isPublic ? "公開" : "非公開";
-  $("log").textContent = "";
-  show("v-chat");
-  window.currentRoom = id;
+/* ---------- 共有 ---------- */
+async function share(id) {
+  const url = location.origin + location.pathname + "#room=" + encodeURIComponent(id);
+  if (navigator.share) {
+    try { await navigator.share({ title: "ルームチャット", text: "ルーム「" + id + "」に参加しよう", url }); return; }
+    catch (e) { if (e.name === "AbortError") return; }
+  }
+  try { await navigator.clipboard.writeText(url); toast("共有リンクをコピーしました（非公開ルームはパスワードも伝えてください）"); }
+  catch { prompt("このリンクを共有してください", url); }
+}
+$("share-room").onclick = () => room && share(room);
+
+/* ---------- チャット ---------- */
+const favMark = () => { $("fav").textContent = (S.joined[room] && S.joined[room].fav) ? "★" : "☆"; };
+$("fav").onclick = () => {
+  const j = S.joined[room]; if (!j) return;
+  j.fav = !j.fav; save(); favMark();
+  toast(j.fav ? "お気に入りに追加しました" : "お気に入りを外しました");
+};
+function openChat(id, isPub) {
+  go("chat"); room = id;
+  $("title").textContent = id;
+  $("tag").textContent = isPub ? "公開" : "非公開";
+  $("log").textContent = ""; favMark();
   stopMsgs = onChildAdded(query(ref(db, "messages/" + id), limitToLast(100)), snap => {
     const m = snap.val(); if (!m) return;
+    const j = S.joined[id];
+    if (j) { j.lastRead = Math.max(j.lastRead || 0, m.ts || Date.now()); save(); }
     const log = $("log");
     const nearEnd = log.scrollHeight - log.scrollTop - log.clientHeight < 80;
     const wrap = document.createElement("div");
     wrap.className = "msg" + (m.uid === uid ? " me" : "");
     const meta = document.createElement("div"); meta.className = "meta";
-    const t = new Date(m.ts || Date.now());
-    meta.textContent = m.name + "  " + t.toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" });
+    meta.textContent = m.name + " #" + shortId(m.uid) + "  " + new Date(m.ts || Date.now()).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" });
     const body = document.createElement("div"); body.className = "body"; body.textContent = m.text;
     wrap.append(meta, body); log.append(wrap);
     if (nearEnd || m.uid === uid) log.scrollTop = log.scrollHeight;
@@ -263,12 +394,22 @@ function openChat(id, isPublic) {
 $("send").onsubmit = async e => {
   e.preventDefault();
   const text = $("text").value.trim();
-  if (!text) return;
+  if (!text || !room) return;
   $("text").value = "";
-  try { await push(ref(db, "messages/" + window.currentRoom), { uid, name: nick, text, ts: serverTimestamp() }); }
-  catch { $("text").value = text; }
+  const k = push(ref(db, "messages/" + room)).key;
+  try {
+    await update(ref(db), {
+      ["messages/" + room + "/" + k]: { uid, name: nick, text, ts: serverTimestamp() },
+      ["roomsStat/" + room + "/lastAt"]: serverTimestamp(),
+      ["roomsStat/" + room + "/count"]: increment(1)
+    });
+  } catch { $("text").value = text; toast("送信できませんでした"); }
 };
-$("leave").onclick = () => { if (stopMsgs) stopMsgs(); stopMsgs = null; window.currentRoom = null; toLobby(); };
+
+/* ---------- 起動 ---------- */
+updateMe();
+addEventListener("hashchange", checkHash);
+if (nick) { $("app").classList.remove("nonick"); go("home"); checkHash(); } else go("nick");
 </script>
 </body>
 </html>
