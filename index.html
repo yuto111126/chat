@@ -56,6 +56,10 @@ main{flex:1;min-width:0;display:flex;flex-direction:column;max-width:760px;margi
 .msg.me{align-self:flex-end;text-align:right}
 .msg.me .body{background:var(--accent);border-color:var(--accent);color:#fff;border-radius:14px 14px 4px 14px;text-align:left}
 #send{display:flex;gap:8px;padding-top:10px;border-top:1px solid var(--line)}
+dialog{border:1px solid var(--line);border-radius:14px;padding:18px;width:min(92vw,360px);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+dialog .col{display:grid;gap:8px;margin-top:12px}
+button.danger{background:var(--warn);border-color:var(--warn);color:#fff;font-weight:700}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 16px;border-radius:99px;font-size:.88rem;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
 #toast.on{opacity:1}
 #scrim{display:none}
@@ -90,6 +94,7 @@ main{flex:1;min-width:0;display:flex;flex-direction:column;max-width:760px;margi
     <span class="tag" id="tag" hidden></span>
     <button id="fav" hidden aria-label="お気に入り">☆</button>
     <button id="share-room" hidden>共有</button>
+    <button id="del" hidden aria-label="ルームを削除">🗑</button>
   </header>
 
   <!-- 公開ルーム一覧 -->
@@ -163,6 +168,16 @@ main{flex:1;min-width:0;display:flex;flex-direction:column;max-width:760px;margi
     </form>
   </section>
 </main>
+<dialog id="dlg">
+  <h2>ルームを削除</h2>
+  <p class="empty" id="dlg-info"></p>
+  <p class="empty">参加者の過半数が賛成すると、ルームとメッセージがすべて削除されます。</p>
+  <div class="col">
+    <button class="pri" id="vote">削除に賛成する</button>
+    <button class="danger" id="kill" hidden>今すぐ削除（作成者）</button>
+    <button id="dlg-close">閉じる</button>
+  </div>
+</dialog>
 <div id="toast"></div>
 </div>
 
@@ -194,6 +209,7 @@ const save = () => store.set("chat-state", JSON.stringify(S));
 const shortId = u => (u || "").replace(/-/g, "").slice(0, 6).toUpperCase();
 
 let stats = {}, pub = {}, cur = "", room = null, stopMsgs = null, order = "pop", rnd = {};
+let stopWatch = null, rs = { n: 0, v: 0, need: 1, voted: false }, isOwner = false;
 
 const validId = s => /^[^.$#\[\]\/\s]{1,30}$/.test(s);
 async function sha(s) {
@@ -217,11 +233,13 @@ const lastAt = id => (stats[id] && stats[id].lastAt) || 0;
 const TITLES = { home: "公開ルーム", mine: "マイルーム", joined: "参加ルーム", nick: "ニックネーム", chat: "" };
 function go(name) {
   if (stopMsgs) { stopMsgs(); stopMsgs = null; room = null; }
+  if (stopWatch) { stopWatch(); stopWatch = null; }
+  if ($("dlg").open) $("dlg").close();
   cur = name;
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === "v-" + name));
   document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.go === name));
   $("title").textContent = TITLES[name];
-  ["tag", "fav", "share-room"].forEach(i => $(i).hidden = name !== "chat");
+  ["tag", "fav", "share-room", "del"].forEach(i => $(i).hidden = name !== "chat");
   $("app").classList.remove("open");
   if (name === "nick") $("nick").value = nick;
   render();
@@ -328,7 +346,7 @@ $("j-ok").onclick = () => {
 async function enterRoom(id, pass) {
   try {
     const snap = await get(ref(db, "roomsMeta/" + id));
-    if (!snap.exists()) { toast("そのルームは見つかりません"); if (cur === "joined") $("j-err").textContent = "そのルームは見つかりません。"; return; }
+    if (!snap.exists()) { delete S.joined[id]; S.mine = S.mine.filter(x => x !== id); save(); render(); toast("そのルームは見つかりません"); if (cur === "joined") $("j-err").textContent = "そのルームは見つかりません。"; return; }
     const meta = snap.val();
     let ph = (S.joined[id] && S.joined[id].ph) || null;
     if (!meta.public) {
@@ -376,6 +394,8 @@ function openChat(id, isPub) {
   $("title").textContent = id;
   $("tag").textContent = isPub ? "公開" : "非公開";
   $("log").textContent = ""; favMark();
+  set(ref(db, "members/" + id + "/" + uid), { name: nick, at: Date.now() }).catch(() => {});
+  watchRoom(id);
   stopMsgs = onChildAdded(query(ref(db, "messages/" + id), limitToLast(100)), snap => {
     const m = snap.val(); if (!m) return;
     const j = S.joined[id];
@@ -405,6 +425,45 @@ $("send").onsubmit = async e => {
     });
   } catch { $("text").value = text; toast("送信できませんでした"); }
 };
+
+/* ---------- ルーム削除（多数決） ---------- */
+async function deleteRoom(id) {
+  const u = {};
+  ["messages", "roomsMeta", "roomsStat", "publicRooms", "members", "deleteVotes"].forEach(p => u[p + "/" + id] = null);
+  try { await update(ref(db), u); } catch (e) { toast("削除できませんでした: " + e.message); }
+}
+function watchRoom(id) {
+  let mem = null, votes = null;
+  const calc = () => {
+    if (mem === null || votes === null) return;
+    const n = Object.keys(mem).length, v = Object.keys(votes).filter(u => u in mem).length;
+    rs = { n, v, need: Math.floor(n / 2) + 1, voted: uid in votes };
+    paintDlg();
+    if (v > 0 && v >= rs.need) deleteRoom(id);
+  };
+  const offs = [
+    onValue(ref(db, "members/" + id), s => { mem = s.val() || {}; calc(); }),
+    onValue(ref(db, "deleteVotes/" + id), s => { votes = s.val() || {}; calc(); }),
+    onValue(ref(db, "roomsMeta/" + id), s => {
+      if (!s.exists()) {
+        if (room !== id) return;
+        delete S.joined[id]; S.mine = S.mine.filter(x => x !== id); save();
+        toast("このルームは削除されました"); go("home"); return;
+      }
+      isOwner = s.val().creator === uid || S.mine.includes(id); paintDlg();
+    })
+  ];
+  stopWatch = () => offs.forEach(f => f());
+}
+function paintDlg() {
+  $("dlg-info").textContent = "参加者 " + rs.n + "人 ／ 削除に賛成 " + rs.v + "人（" + rs.need + "人で削除）";
+  $("vote").textContent = rs.voted ? "賛成を取り消す" : "削除に賛成する";
+  $("kill").hidden = !isOwner;
+}
+$("del").onclick = () => { paintDlg(); $("dlg").showModal(); };
+$("dlg-close").onclick = () => $("dlg").close();
+$("vote").onclick = () => set(ref(db, "deleteVotes/" + room + "/" + uid), rs.voted ? null : true).catch(e => toast("投票できませんでした: " + e.message));
+$("kill").onclick = () => { if (confirm("「" + room + "」を今すぐ削除します。元に戻せません。よろしいですか？")) deleteRoom(room); };
 
 /* ---------- 起動 ---------- */
 updateMe();
